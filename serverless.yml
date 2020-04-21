@@ -1,0 +1,143 @@
+service:
+  name: survive-game-mateuszskibicki
+
+# app and org for use with dashboard.serverless.com
+# org: mateuszskibicki
+# app: survive-game-mateuszskibicki
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+  - serverless-offline # adding the plugin to be able to run the offline emulation
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: eu-west-2
+  version: 0.1
+  apiGateway:
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+  environment:
+    NODE_ENV: production
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    DYNAMODB_TABLE: igrzyskaTable
+    FB_APP_ID: SORRY_CONFIDENTIAL-:D
+    FB_APP_SECRET: SORRY_CONFIDENTIAL-:D
+    SNS_TOPIC_LEAVE_GROUP: SORRY_CONFIDENTIAL-:D
+    PRIVATE_AUTH_KEY: SORRY_CONFIDENTIAL-:D
+    PUBLIC_AUTH_KEY: SORRY_CONFIDENTIAL-:D
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: SORRY_CONFIDENTIAL-:D
+    - Effect: "Allow"
+      Resource: "*"
+      Action:
+        - "sns:*"
+
+functions:
+  # Login
+  loginHandler:
+    handler: ./src/auth/index.loginHandler
+    events:
+      - http:
+          method: post
+          path: v${self:provider.version}/login
+          cors: true
+  # Groups
+  createGroup:
+    handler: ./src/groups/index.createGroupHandler
+    events:
+      - http:
+          method: post
+          path: v${self:provider.version}/group
+          cors: true
+  getGroupHandler:
+    handler: ./src/groups/index.getGroupHandler
+    events:
+      - http:
+          method: get
+          path: v${self:provider.version}/group/{id}
+          cors: true
+  getGroupPartialHandler:
+    handler: ./src/groups/index.getGroupPartialHandler
+    events:
+      - http:
+          method: get
+          path: v${self:provider.version}/group/{id}/partial
+          cors: true
+  signToGroupHandler:
+    handler: ./src/groups/index.signToGroupHandler
+    events:
+      - http:
+          method: post
+          path: v${self:provider.version}/group/{id}/sign
+          cors: true
+  leaveGroupHandler:
+    handler: ./src/groups/index.leaveGroupHandler
+    events:
+      - http:
+          method: post
+          path: v${self:provider.version}/group/{id}/leave
+          cors: true
+  # Users
+  getUserByIdHandler:
+    handler: ./src/users/index.getUserByIdHandler
+    events:
+      - http:
+          method: get
+          path: v${self:provider.version}/user/{id}
+          cors: true
+  getMeHandler:
+    handler: ./src/users/index.getMeHandler
+    events:
+      - http:
+          method: get
+          path: v${self:provider.version}/user/me
+          cors: true
+  # Games
+  createGameHandler:
+    handler: ./src/games/index.createGameHandler
+    events:
+      - http:
+          method: post
+          path: v${self:provider.version}/game
+          cors: true
+  getGameHandler:
+    handler: ./src/games/index.getGameHandler
+    events:
+      - http:
+          method: get
+          path: v${self:provider.version}/game/{id}
+          cors: true
+  signToGameHandler:
+    handler: ./src/games/index.signToGameHandler
+    events:
+      - http:
+          method: post
+          path: v${self:provider.version}/game/{id}/sign
+          cors: true
+  # STATS
+  getStatsHandler:
+    handler: ./src/stats/index.getStatsHandler
+    events:
+      - http:
+          method: get
+          path: v${self:provider.version}/stats
+          cors: true
+  # SNS
+  leaveGroupSnsHandler:
+    handler: ./src/groups/index.leaveGroupSnsHandler
+    events:
+      - sns: SORRY_CONFIDENTIAL-:D
