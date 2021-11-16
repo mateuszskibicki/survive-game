@@ -10,7 +10,7 @@
     "test:integration:watch": "jest --watchAll --verbose -c jest.config.integration.js"
   },
   "dependencies": {
-    "aws-sdk": "^2.655.0",
+    "aws-sdk": "^2.814.0",
     "axios": "^0.19.2",
     "date-fns": "^2.12.0",
     "fb": "^2.0.0",
